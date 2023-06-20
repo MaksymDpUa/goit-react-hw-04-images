@@ -1,49 +1,36 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import css from './Modal.module.css';
 
-export class Modal extends Component {
-    state = {
-    }
-    componentDidMount() {
-        window.addEventListener('keydown', this.handlePressEsc);
-        
-    }
- 
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.handlePressEsc)
-    }
+export const Modal = ({ closeModal, largeImage, alt }) => {
+  
+    useEffect(() => {
+    const handlePressEsc = e => {
+      if (e.key === 'Escape') closeModal();
+    };
+    window.addEventListener('keydown', handlePressEsc);
+    return () => {
+      window.removeEventListener('keydown', handlePressEsc);
+    };
+  }, [closeModal]);
+
     
-    handleOverlayClick = (e) => {
+  const handleOverlayClick = e => {
+    if (e.currentTarget === e.target) closeModal();
+  };
 
-        if (e.currentTarget === e.target) {
-     this.props.closeModal()
-}
-    }
-
-    handlePressEsc = (e) => {
-        if (e.key === 'Escape') {
-            this.props.closeModal()
-        }
-    }
     
+  return (
+    <div className={css.overlay} onClick={handleOverlayClick}>
+      <div className={css.modal}>
+        <img src={largeImage} alt={alt} className={css.image} />
+      </div>
+    </div>
+  );
+};
 
-    render() {
-        return <div className={css.overlay} onClick={this.handleOverlayClick}>
-            <div className={css.modal}>
-                <img src={this.props.largeImage} alt={this.props.alt} className={css.image} />
-            </div>
-        </div>
-    }
-}
-
-Modal.propTypes = {    
-    alt: PropTypes.string,
-    closeModal: PropTypes.func,
-    largeImage: PropTypes.string,
-}
-
-
-
-
-
+Modal.propTypes = {
+  alt: PropTypes.string,
+  closeModal: PropTypes.func,
+  largeImage: PropTypes.string,
+};
